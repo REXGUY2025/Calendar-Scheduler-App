@@ -1,5 +1,5 @@
 
-package app;
+package fop_group_assignment;
 
 import java.time.*;
 import java.util.*;
