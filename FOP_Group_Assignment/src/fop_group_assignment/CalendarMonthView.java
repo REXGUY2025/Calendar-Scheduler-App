@@ -1,13 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package fop_group_assignment;
 
-/**
- *
- * @author aiman
- */
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
