@@ -1,13 +1,14 @@
+<<<<<<< HEAD
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package fop_group_assignment;
+=======
+>>>>>>> fede75459490d51bd5cf681a90faa0b936b89096
 
-/**
- *
- * @author aiman
- */
+package fop_group_assignment;
+
 import java.time.*;
 import java.util.*;
 
