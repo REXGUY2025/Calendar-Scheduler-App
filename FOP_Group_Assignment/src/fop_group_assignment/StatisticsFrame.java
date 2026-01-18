@@ -1,8 +1,5 @@
 package fop_group_assignment;
-<<<<<<< HEAD
 
-=======
->>>>>>> fede75459490d51bd5cf681a90faa0b936b89096
 
 import javax.swing.*;
 
