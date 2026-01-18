@@ -1,4 +1,4 @@
-package app;
+package fop_group_assignment;
 
 public class AdditionalFields {
     private int eventId;
