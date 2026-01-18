@@ -1,4 +1,5 @@
-package fop_group_assignment;
+
+package app;
 
 import java.util.*;
 import java.time.*;
@@ -40,20 +41,31 @@ public class EventService {
     }
 
     public static void updateEvent(Event e, AdditionalFields af) {
-        List<Event> all = getAllEvents();
-        List<String> out = new ArrayList<>();
-        out.add("eventId,title,description,startDateTime,endDateTime");
-
-        for (Event ev : all) {
-            if (ev.getEventId() == e.getEventId())
-                out.add(e.toString());
-            else
-                out.add(ev.toString());
+    List<Event> all = getAllEvents();
+    List<String> out = new ArrayList<>();
+    out.add("eventId,title,description,startDateTime,endDateTime");
+    
+    // Find and update the existing event
+    boolean updated = false;
+    for (Event ev : all) {
+        if (ev.getEventId() == e.getEventId()) {
+            // Replace with the updated event
+            out.add(e.toString());
+            updated = true;
+        } else {
+            // Keep other events unchanged
+            out.add(ev.toString());
         }
-        FileService.writeAll(FILE, out);
-
-        AdditionalFieldService.update(af);
     }
+    
+    // If event wasn't found (shouldn't happen), add it
+    if (!updated) {
+        out.add(e.toString());
+    }
+    
+    FileService.writeAll(FILE, out);
+    AdditionalFieldService.update(af);
+}
  
     public static void deleteEvent(int id) {
         List<Event> all = getAllEvents();

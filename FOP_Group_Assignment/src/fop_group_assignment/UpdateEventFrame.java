@@ -1,4 +1,4 @@
-package fop_group_assignment;
+package app;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,14 +20,23 @@ public class UpdateEventFrame extends JFrame {
         update.setForeground(Color.WHITE);
 
         update.addActionListener(e -> {
-            int eventId = Integer.parseInt(id.getText());
-            Event ev = EventService.getById(eventId);
-            if (ev == null) {
-                JOptionPane.showMessageDialog(this, "Event not found");
-                return;
+            try {
+                int eventId = Integer.parseInt(id.getText());
+                Event ev = EventService.getById(eventId);
+                if (ev == null) {
+                    JOptionPane.showMessageDialog(this, "Event not found");
+                    return;
+                }
+                
+                // Get additional fields for the event
+                AdditionalFields af = AdditionalFieldService.get(eventId);
+                
+                // Open AddEventFrame in UPDATE mode with the event data
+                new AddEventFrame(ev, af).setVisible(true);
+                dispose();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid event ID");
             }
-            new AddEventFrame().setVisible(true);
-            dispose();
         });
 
         p.add(new JLabel("Event ID"));
@@ -37,4 +46,3 @@ public class UpdateEventFrame extends JFrame {
         add(p);
     }
 }
-

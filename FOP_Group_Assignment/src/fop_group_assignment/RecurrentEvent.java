@@ -1,13 +1,13 @@
-
-package fop_group_assignment;
+package app;
 
 public class RecurrentEvent {
-
-    private int eventId;
+    private int eventId;           //variable declaration
     private String interval;
     private int times;
     private String endDate;
-
+  
+    
+    //constructor
     public RecurrentEvent(int eventId, String interval, int times, String endDate) {
         this.eventId = eventId;
         this.interval = interval;
@@ -15,7 +15,7 @@ public class RecurrentEvent {
         this.endDate = endDate;
     }
 
-    public int getEventId() {
+    public int getEventId() {  //getter
         return eventId;
     }
 
@@ -31,8 +31,8 @@ public class RecurrentEvent {
         return endDate;
     }
 
-    @Override
-    public String toString() {
+    @Override                
+    public String toString() { //convert text in the format
         return eventId + "," + interval + "," + times + "," + endDate;
     }
 }

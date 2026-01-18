@@ -1,12 +1,26 @@
-package fop_group_assignment;
+package app;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class AddEventFrame extends JFrame {
 
+    private boolean isUpdateMode = false;
+    private int existingEventId;
+
     public AddEventFrame() {
-        setTitle("Add Event");
+        this.isUpdateMode = false;
+        initializeUI(null, null);
+    }
+
+    public AddEventFrame(Event existingEvent, AdditionalFields additionalFields) {
+        this.isUpdateMode = true;
+        this.existingEventId = existingEvent.getEventId();
+        initializeUI(existingEvent, additionalFields);
+    }
+
+    private void initializeUI(Event existingEvent, AdditionalFields additionalFields) {
+        setTitle(isUpdateMode ? "Update Event" : "Add Event");
         setSize(400, 600);
         setLocationRelativeTo(null);
 
@@ -40,16 +54,47 @@ public class AddEventFrame extends JFrame {
             endDate.setEnabled(enabled);
         });
 
-        JButton save = new JButton("Save Event");
+        // If in update mode, populate fields with existing data
+        if (isUpdateMode && existingEvent != null) {
+            title.setText(existingEvent.getTitle());
+            desc.setText(existingEvent.getDescription());
+            start.setText(existingEvent.getStartDateTime());
+            end.setText(existingEvent.getEndDateTime());
+            
+            if (additionalFields != null) {
+                location.setText(additionalFields.getLocation());
+                category.setText(additionalFields.getCategory());
+                reminder.setText(String.valueOf(additionalFields.getReminderMinutes())); // Fixed here
+            }
+            
+            // Check if this event has recurrence
+            RecurrentEvent re = RecurrenceService.get(existingEventId);
+            if (re != null) {
+                recurring.setSelected(true);
+                interval.setSelectedItem(re.getInterval());
+                times.setText(String.valueOf(re.getTimes()));
+                endDate.setText(re.getEndDate());
+                interval.setEnabled(true);
+                times.setEnabled(true);
+                endDate.setEnabled(true);
+            }
+        }
+
+        JButton save = new JButton(isUpdateMode ? "Update Event" : "Save Event");
         save.setBackground(new Color(126, 87, 194));
         save.setForeground(Color.WHITE);
 
         save.addActionListener(e -> {
             try {
-                int id = EventService.getNextEventId();
+                int eventId;
+                if (isUpdateMode) {
+                    eventId = existingEventId;
+                } else {
+                    eventId = EventService.getNextEventId();
+                }
 
                 Event ev = new Event(
-                        id,
+                        eventId,
                         title.getText(),
                         desc.getText(),
                         start.getText(),
@@ -57,36 +102,65 @@ public class AddEventFrame extends JFrame {
                 );
 
                 AdditionalFields af = new AdditionalFields(
-                        id,
+                        eventId,
                         location.getText(),
                         category.getText(),
                         "",
                         Integer.parseInt(reminder.getText())
                 );
 
-                if (ConflictCheckerService.conflicts(ev)) {
+                // Check for conflicts (exclude current event when updating)
+                boolean hasConflict;
+                if (isUpdateMode) {
+                    hasConflict = ConflictCheckerService.conflicts(ev, eventId);
+                } else {
+                    hasConflict = ConflictCheckerService.conflicts(ev);
+                }
+                
+                if (hasConflict) {
                     JOptionPane.showMessageDialog(this, "Time Conflict Detected!");
                     return;
                 }
 
-                EventService.addEvent(ev, af);
+                if (isUpdateMode) {
+                    EventService.updateEvent(ev, af);
+                    
+                    // 🔁 Update or delete recurrence
+                    if (recurring.isSelected()) {
+                        RecurrentEvent re = new RecurrentEvent(
+                                eventId,
+                                interval.getSelectedItem().toString(),
+                                Integer.parseInt(times.getText()),
+                                endDate.getText()
+                        );
+                        RecurrenceService.update(re);
+                    } else {
+                        RecurrenceService.delete(eventId);
+                    }
+                    
+                    JOptionPane.showMessageDialog(this, "Event Updated!");
+                } else {
+                    EventService.addEvent(ev, af);
 
-                // 🔁 Save recurrence if selected
-                if (recurring.isSelected()) {
-                    RecurrentEvent re = new RecurrentEvent(
-                            id,
-                            interval.getSelectedItem().toString(),
-                            Integer.parseInt(times.getText()),
-                            endDate.getText()
-                    );
-                    RecurrenceService.save(re);
+                    // 🔁 Save recurrence if selected
+                    if (recurring.isSelected()) {
+                        RecurrentEvent re = new RecurrentEvent(
+                                eventId,
+                                interval.getSelectedItem().toString(),
+                                Integer.parseInt(times.getText()),
+                                endDate.getText()
+                        );
+                        RecurrenceService.save(re);
+                    }
+                    
+                    JOptionPane.showMessageDialog(this, "Event Added!");
                 }
 
-                JOptionPane.showMessageDialog(this, "Event Added!");
                 dispose();
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Invalid Input");
+                JOptionPane.showMessageDialog(this, "Invalid Input: " + ex.getMessage());
+                ex.printStackTrace();
             }
         });
 

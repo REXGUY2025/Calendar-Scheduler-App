@@ -1,4 +1,4 @@
-package fop_group_assignment;
+package app;
 
 public class AdditionalFields {
     private int eventId;
@@ -20,6 +20,9 @@ public class AdditionalFields {
     public String getCategory() { return category; }
     public String getAttendees() { return attendees; }
     public int getReminderMinutes() { return reminderMinutes; }
+    
+    // Added method for compatibility with AddEventFrame
+    public int getReminder() { return reminderMinutes; }
 
     @Override
     public String toString() {
