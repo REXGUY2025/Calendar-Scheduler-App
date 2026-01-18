@@ -1,5 +1,5 @@
 
-package app;
+package fop_group_assignment;
 
 public class RecurrentEvent {
 
